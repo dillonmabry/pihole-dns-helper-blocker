@@ -8,6 +8,7 @@ from logger import Logger
 
 def get_source_data(sourcedb):
     """ get pi source domains """
+    """ domain status types: https://docs.pi-hole.net/ftldns/database/#supported-status-types """
     cursor = sourcedb.cursor
     rec = cursor.execute("""
         select domain,count(domain)

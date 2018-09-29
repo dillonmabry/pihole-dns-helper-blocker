@@ -113,4 +113,5 @@ dmypy.json
 # Custom
 /log
 .old
-pihole-metadata.db
+*.db
+*.csv
