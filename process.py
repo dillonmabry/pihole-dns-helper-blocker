@@ -13,7 +13,7 @@ def get_source_data(sourcedb):
         select domain,count(domain)
         from queries
         group by domain
-        order by count(domain) desc limit 5;
+        order by count(domain) desc;
     """)
     rows = rec.fetchall()
     sourcedb.close()
