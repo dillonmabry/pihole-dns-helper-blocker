@@ -8,17 +8,32 @@ def create_connection(db_file):
         conn = sqlite3.connect(db_file)
         conn.execute(
         """
-          DROP TABLE IF EXISTS Domains;
+          DROP TABLE IF EXISTS ips;
         """
         )
         conn.execute(
         """
-          CREATE TABLE IF NOT EXISTS Domains
+          CREATE TABLE IF NOT EXISTS ips
           (
             id INTEGER PRIMARY KEY,
             parent_domain TEXT,
             ip_address TEXT,
             last_resolved DATE
+          );
+        """
+        )
+        conn.execute(
+        """
+          DROP TABLE IF EXISTS files;
+        """
+        )
+        conn.execute(
+        """
+          CREATE TABLE IF NOT EXISTS files
+          (
+            id INTEGER PRIMARY KEY,
+            parent_domain TEXT,
+            hash TEXT
           );
         """
         )
