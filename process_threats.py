@@ -20,20 +20,40 @@ def get_source_data(sourcedb):
     sourcedb.close()
     return rows
 
-def get_refs(domain):
-    """ get api results for each request, insert to staging """
-    res = requests.get(config.THREAT_API, params = {"domain": domain })
-    res_json = res.json()
-    votes = res_json.get("votes", None)
-    if votes is not None and votes < config.THREAT_THRESHOLD:
-        ips = [(domain, d['ip_address'], d['last_resolved']) for d in res_json["resolutions"]]
-        hashes = [(domain, f) for f in res_json["hashes"]]
-        metadata = [set(ips), set(hashes)]
+def get_geo_json(domain, ip):
+    """ geolocation API """
+    geo_res = requests.get(config.GEOLOCATION_API, params = {"apiKey": config.GEOLOCATION_API_KEY, "ip": ip})
+    try:
+        res_data = geo_res.json()
+        metadata = (domain,
+                    ip,
+                    res_data.get("continent_code", "N/P"),
+                    res_data.get("country_code2", "N/P"),
+                    res_data.get("latitude", -9999),
+                    res_data.get("longitude", -9999),
+                    res_data.get("isp", "N/P"))
         return metadata
-    else:
-        return None
+    except JSONDecodeError:
+        pass
 
-def save_data(targetdb, ips, hashes):
+def get_refs(domain):
+    """ ThreatCrowd API and GeoLoc API """
+    res = requests.get(config.THREAT_API, params = {"domain": domain })
+    try:
+        res_json = res.json()
+        votes = res_json.get("votes", None)
+        if votes is not None and votes < config.THREAT_THRESHOLD:
+            ips = [(domain, d["ip_address"], d["last_resolved"]) for d in res_json["resolutions"] if d["ip_address"] is not "-"]
+            ip_geos = [get_geo_json(domain, ip[1]) for ip in ips] # ip[1] for ip in existing tuple list
+            hashes = [(domain, f) for f in res_json["hashes"]]
+            metadata = [set(ips), set(hashes), set(ip_geos)]
+            return metadata
+        else:
+            return None
+    except JSONDecodeError:
+        pass
+
+def save_data(targetdb, ips, hashes, ipgeos):
     """ update staging data """
     targetdb.cursor.executemany("""
             insert into ips (parent_domain, ip_address, last_resolved) values (?, ?, ?)
@@ -41,6 +61,9 @@ def save_data(targetdb, ips, hashes):
     targetdb.cursor.executemany("""
             insert into files (parent_domain, hash) values (?, ?)
         """, hashes)
+    targetdb.cursor.executemany("""
+            insert into ipgeos (parent_domain, ip_address, continent_code, country_code, latitude, longitude, isp) values (?, ?, ?, ?, ?, ?, ?)
+        """, ipgeos)
     """ cleanup and commit """
     targetdb.conn.commit()
     targetdb.close()
@@ -57,9 +80,14 @@ def process_domains(source_data, targetdb, logger):
             """ clean hashes """
             list_hashes = [next(iter(items[1:]), None) for items in clean_metadata for item in items]
             flat_hashes = [item for items in list_hashes for item in items if item is not None] # flatten dataset
-            unique_ips = list(set(flat_ips)) # uniqueness
-            unique_hashes = list(set(flat_hashes)) # uniqueness
-            save_data(targetdb, unique_ips, unique_hashes)
+            """ clean ipgeos """
+            list_ipgeos = [next(iter(items[2:]), None) for items in clean_metadata for item in items]
+            flat_geos = [item for items in list_ipgeos for item in items if item is not None] # flatten dataset
+            """ uniqueness """
+            unique_ips = list(set(flat_ips))
+            unique_hashes = list(set(flat_hashes))
+            unique_ipgeos = list(set(flat_geos))
+            save_data(targetdb, unique_ips, unique_hashes, unique_ipgeos)
             p.terminate()
     except Exception as e:
         logger.exception(str(e))
