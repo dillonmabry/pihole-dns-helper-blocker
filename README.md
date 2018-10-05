@@ -90,7 +90,7 @@ plt.show()
 ```
 
 
-![png](output_4_0.png)
+![png](https://user-images.githubusercontent.com/10522556/46509914-a43a0600-c813-11e8-8dfc-1666ab3bcd7c.png)
 
 
 
@@ -119,7 +119,7 @@ plt.show()
 
 
 
-![png](output_5_1.png)
+![png](https://user-images.githubusercontent.com/10522556/46509915-a43a0600-c813-11e8-8c63-2b2a19bf9b3c.png)
 
 
 
@@ -240,7 +240,7 @@ show_roc(lr, test, test_labels) # Overfitting
 ```
 
 
-![png](output_14_0.png)
+![png](https://user-images.githubusercontent.com/10522556/46509916-a43a0600-c813-11e8-8941-f2ed799ae932.png)
 
 
 
@@ -250,7 +250,7 @@ show_roc(rf, test, test_labels) # Overfitting
 ```
 
 
-![png](output_15_0.png)
+![png](https://user-images.githubusercontent.com/10522556/46509917-a43a0600-c813-11e8-8783-9d341046c4a0.png)
 
 
 
@@ -260,7 +260,7 @@ show_roc(gnb, test, test_labels) # Appropriate ROC
 ```
 
 
-![png](output_16_0.png)
+![png](https://user-images.githubusercontent.com/10522556/46509919-a43a0600-c813-11e8-8dda-4610de88079c.png)
 
 
 
@@ -269,7 +269,7 @@ show_roc(dclf, test, test_labels) # Overfitting example
 ```
 
 
-![png](output_17_0.png)
+![png](https://user-images.githubusercontent.com/10522556/46509920-a43a0600-c813-11e8-9c0f-c20805169aea.png)
 
 
 
