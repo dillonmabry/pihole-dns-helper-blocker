@@ -110,13 +110,6 @@ plt.xlabel("IP Geolocations - Malicious (Red), Non-Malicious (Blue)")
 plt.show()
 ```
 
-    /Users/dillonmabry/anaconda3/lib/python3.6/site-packages/mpl_toolkits/basemap/__init__.py:3296: MatplotlibDeprecationWarning: The ishold function was deprecated in version 2.0.
-      b = ax.ishold()
-    /Users/dillonmabry/anaconda3/lib/python3.6/site-packages/mpl_toolkits/basemap/__init__.py:3305: MatplotlibDeprecationWarning: axes.hold is deprecated.
-        See the API Changes document (http://matplotlib.org/api/api_changes.html)
-        for more details.
-      ax.hold(b)
-
 
 
 ![png](https://user-images.githubusercontent.com/10522556/46509915-a43a0600-c813-11e8-8c63-2b2a19bf9b3c.png)
